@@ -69,43 +69,6 @@
         .fullscreen-btn:hover {
             background-color: #0056b3;
         }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 800px;
-            border-radius: 8px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-        }
     </style>
 </head>
 <body>
@@ -115,14 +78,6 @@
 </header>
 
 <div class="container" id="game-list"></div>
-
-<!-- Modal for game iframe -->
-<div id="gameModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <iframe id="gameFrame" src=""></iframe>
-    </div>
-</div>
 
 <script>
     async function fetchGames() {
@@ -154,12 +109,12 @@
 
             const playButton = document.createElement('button');
             playButton.textContent = 'Play';
-            playButton.onclick = () => openGame(game.iframe);
+            playButton.onclick = () => openFullscreen(game.iframe);
 
             const fullscreenButton = document.createElement('button');
             fullscreenButton.textContent = 'Fullscreen';
             fullscreenButton.className = 'fullscreen-btn';
-            fullscreenButton.onclick = () => openFullscreen(game.iframe);
+            fullscreenButton.onclick = () => openInBlankTab(game.iframe);
 
             card.appendChild(img);
             card.appendChild(title);
@@ -169,38 +124,19 @@
         });
     }
 
-    function openGame(iframeString) {
+    function openInBlankTab(iframeString) {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = iframeString;
         const iframe = tempDiv.querySelector('iframe');
 
         if (iframe) {
-            document.getElementById('gameFrame').src = iframe.src;
-            document.getElementById('gameModal').style.display = 'block';
+            const newTab = window.open("about:blank", "_blank");
+            if (newTab) {
+                newTab.document.write(`<!DOCTYPE html><html lang='en'><head><title>Game</title></head><body style='margin:0;overflow:hidden;'><iframe src='${iframe.src}' style='width:100vw;height:100vh;border:none;'></iframe></body></html>`);
+                newTab.document.close();
+            }
         }
     }
-
-    function openFullscreen(iframeString) {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = iframeString;
-        const iframe = tempDiv.querySelector('iframe');
-
-        if (iframe) {
-            window.open(iframe.src, '_blank');
-        }
-    }
-
-    document.querySelector('.close').onclick = function() {
-        document.getElementById('gameModal').style.display = 'none';
-        document.getElementById('gameFrame').src = '';
-    };
-
-    window.onclick = function(event) {
-        if (event.target === document.getElementById('gameModal')) {
-            document.getElementById('gameModal').style.display = 'none';
-            document.getElementById('gameFrame').src = '';
-        }
-    };
 
     document.addEventListener("DOMContentLoaded", fetchGames);
 </script>
