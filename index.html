@@ -51,9 +51,23 @@
             cursor: pointer;
             border-bottom-left-radius: 8px;
             border-bottom-right-radius: 8px;
+            margin-bottom: 5px;
         }
         .game-card button:hover {
             background-color: #218838;
+        }
+        .fullscreen-btn {
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .fullscreen-btn:hover {
+            background-color: #0056b3;
         }
         .modal {
             display: none;
@@ -138,13 +152,19 @@
             const title = document.createElement('h3');
             title.textContent = game.name;
 
-            const button = document.createElement('button');
-            button.textContent = 'Play';
-            button.onclick = () => openGame(game.iframe);
+            const playButton = document.createElement('button');
+            playButton.textContent = 'Play';
+            playButton.onclick = () => openGame(game.iframe);
+
+            const fullscreenButton = document.createElement('button');
+            fullscreenButton.textContent = 'Fullscreen';
+            fullscreenButton.className = 'fullscreen-btn';
+            fullscreenButton.onclick = () => openFullscreen(game.iframe);
 
             card.appendChild(img);
             card.appendChild(title);
-            card.appendChild(button);
+            card.appendChild(playButton);
+            card.appendChild(fullscreenButton);
             gameList.appendChild(card);
         });
     }
@@ -157,6 +177,16 @@
         if (iframe) {
             document.getElementById('gameFrame').src = iframe.src;
             document.getElementById('gameModal').style.display = 'block';
+        }
+    }
+
+    function openFullscreen(iframeString) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = iframeString;
+        const iframe = tempDiv.querySelector('iframe');
+
+        if (iframe) {
+            window.open(iframe.src, '_blank');
         }
     }
 
